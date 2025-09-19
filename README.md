@@ -9,6 +9,32 @@ This repository demonstrates a known bug in Coverlet where XPlat Code Coverage c
 - **Status**: Unresolved bug since 2020
 - **Cause**: Name conflict between Coverlet internal "Collector.dll" and user project assemblies
 
+## Recommended Solution
+
+**Use Microsoft's standard Code Coverage tool instead of Coverlet:**
+
+```bash
+# Coverlet (has bug)
+dotnet test --collect:"XPlat Code Coverage"
+
+# Microsoft Code Coverage (recommended)
+dotnet test --collect:"Code Coverage;Format=Cobertura"
+```
+
+### GitHub Actions Example
+
+```yaml
+- name: Test with Coverage
+  run: dotnet test --collect:"Code Coverage;Format=Cobertura" --results-directory ./coverage
+
+- name: Code Coverage Summary
+  uses: irongut/CodeCoverageSummary@v1.3.0
+  with:
+    filename: coverage/**/*.cobertura.xml
+    badge: true
+    format: markdown
+```
+
 ## How to reproduce
 
 1. `dotnet build Test/Test.csproj`
@@ -138,32 +164,6 @@ Passed!  - Failed:     0, Passed:     1, Skipped:     0, Total:     1, Duration:
 ```
 
 If you rename Collector to something like Collectxr, it works correctly.
-
-## Recommended Solution
-
-**Use Microsoft's standard Code Coverage tool instead of Coverlet:**
-
-```bash
-# Coverlet (has bug)
-dotnet test --collect:"XPlat Code Coverage"
-
-# Microsoft Code Coverage (recommended)
-dotnet test --collect:"Code Coverage;Format=Cobertura"
-```
-
-### GitHub Actions Example
-
-```yaml
-- name: Test with Coverage
-  run: dotnet test --collect:"Code Coverage;Format=Cobertura" --results-directory ./coverage
-
-- name: Code Coverage Summary
-  uses: irongut/CodeCoverageSummary@v1.3.0
-  with:
-    filename: coverage/**/*.cobertura.xml
-    badge: true
-    format: markdown
-```
 
 ```
 $ dotnet build Test/Test.csproj
